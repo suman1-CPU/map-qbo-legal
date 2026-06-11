@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en-GB">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>QuickBooks Authorisation — MAP Accounting</title>
+<style>
+  body { font-family: -apple-system, Segoe UI, Roboto, Helvetica, Arial, sans-serif;
+         max-width: 720px; margin: 3rem auto; padding: 0 1.25rem; color: #1a1a1a; line-height: 1.6; }
+  h1 { font-size: 1.4rem; }
+  .box { border: 1px solid #d0d0d0; border-radius: 10px; padding: 1rem 1.25rem; margin: 1rem 0; background: #fafafa; }
+  code, .val { font-family: ui-monospace, Menlo, Consolas, monospace; word-break: break-all; }
+  .val { display:block; background:#fff; border:1px solid #e0e0e0; border-radius:6px; padding:.6rem .8rem; margin:.35rem 0 0; }
+  button { font-size: .95rem; padding: .5rem .9rem; border-radius: 6px; border: 1px solid #0b5fff;
+           background: #0b5fff; color: #fff; cursor: pointer; }
+  .muted { color:#666; font-size:.9rem; } .err { color:#b00020; }
+  label { font-weight:600; font-size:.85rem; color:#444; }
+</style>
+</head>
+<body>
+  <h1>QuickBooks authorisation received</h1>
+  <p class="muted">Copy the full line below and paste it into the terminal where
+     <code>connect.py</code> is waiting, then close this tab.</p>
+
+  <div class="box">
+    <label>Paste this into the terminal:</label>
+    <span class="val" id="full">reading…</span>
+    <p style="margin-top:.8rem"><button onclick="copyFull()">Copy</button>
+       <span id="copied" class="muted"></span></p>
+  </div>
+
+  <details>
+    <summary class="muted">Individual values</summary>
+    <div class="box">
+      <label>Authorisation code</label><span class="val" id="code">—</span>
+      <label style="margin-top:.7rem;display:block">Realm ID (company)</label><span class="val" id="realm">—</span>
+      <label style="margin-top:.7rem;display:block">State</label><span class="val" id="state">—</span>
+    </div>
+  </details>
+
+  <p id="msg" class="muted"></p>
+
+<script>
+  var q = new URLSearchParams(window.location.search);
+  var code = q.get('code'), realm = q.get('realmId'), state = q.get('state'), err = q.get('error');
+  function set(id, v){ document.getElementById(id).textContent = v || '—'; }
+  set('code', code); set('realm', realm); set('state', state);
+  var full = (code ? ('code=' + code + '&realmId=' + (realm||'') + '&state=' + (state||'')) : '');
+  document.getElementById('full').textContent = full || (err ? ('error: ' + err) : 'No authorisation code in URL.');
+  if (err) { document.getElementById('msg').className = 'err'; document.getElementById('msg').textContent = 'Authorisation failed: ' + err; }
+  function copyFull(){
+    navigator.clipboard.writeText(full).then(function(){
+      document.getElementById('copied').textContent = 'copied ✓';
+    });
+  }
+</script>
+</body>
+</html>
